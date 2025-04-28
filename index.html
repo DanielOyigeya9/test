@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUB - Premium Bandwidth Sharing</title>
+    <script src="content.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00ffaa;
+            --secondary: #0088ff;
+            --dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Glassmorphism Panel */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Header with new logo - Modified to shift logo right */
+        header {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background-size: 200% auto;
+            animation: gradient 3s linear infinite;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            padding-left: 2.5rem;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-right: 3.5rem;
+        }
+
+        .logo-svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-text {
+            font-weight: bold;
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        /* Mining Button */
+        .mine-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .mine-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px rgba(0, 255, 170, 0.8);
+        }
+
+        .mine-btn.active {
+            animation: pulse 1.5s infinite;
+        }
+
+        .mine-btn.connecting {
+            background: linear-gradient(45deg, #ff9900, #ff6600);
+            animation: connectingPulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 170, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 255, 170, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 170, 0); }
+        }
+
+        @keyframes connectingPulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 153, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 153, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 153, 0, 0); }
+        }
+
+        /* Updated Earnings Graph Styles - COMPLETELY REDESIGNED */
+        .graph-container {
+            height: 250px; /* Increased height */
+            margin: 2rem 0;
+            position: relative;
+            display: flex;
+        }
+
+        .graph-y-axis {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-right: 10px;
+            height: 100%;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .graph-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .graph-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .graph-date {
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .graph-svg {
+            width: 100%;
+            flex: 1;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: visible;
+        }
+
+        .graph-bar {
+            fill: var(--primary);
+            transition: all 0.3s;
+        }
+
+        .graph-bar:hover {
+            opacity: 0.8;
+        }
+
+        .graph-x-axis {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Dashboard Layout */
+        .dashboard {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        /* Referral button styling */
+        .referral-code {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .referral-code input {
+            flex: 1;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: white;
+            text-align: center;
+        }
+
+        .referral-code button {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.3);
+        }
+
+        .referral-code button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+        }
+
+        /* Logo Link */
+        .logo-link {
+            color: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Rewards Page Styles */
+        .task-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-reward {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .task-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .task-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 170, 0.4);
+        }
+
+        /* Verification Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--dark);
+            padding: 2rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .modal-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn.cancel {
+            background: transparent;
+            border: 1px solid #ff5555;
+            color: #ff5555;
+        }
+
+        .modal-btn.submit {
+            background: var(--primary);
+            border: 1px solid var(--primary);
+            color: var(--dark);
+        }
+
+        .modal-btn:hover {
+            opacity: 0.8;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: white;
+        }
+
+        /* Boost Cards */
+        .boost-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .boost-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .boost-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+
+        .boost-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .boost-multiplier {
+            background: rgba(0, 255, 170, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            margin: 0.5rem auto;
+            display: inline-block;
+        }
+
+        .boost-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .boost-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 170, 0.4);
+        }
+
+        .boost-btn.connected {
+            background: #00aa55;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* App Connect Modal */
+        .app-connect-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .app-connect-content {
+            background: var(--dark);
+            padding: 2rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid var(--primary);
+            text-align: center;
+        }
+
+        .app-connect-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 767px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                padding-left: 1.5rem;
+            }
+            .logo-container {
+                margin-left: 0;
+            }
+            .dashboard {
+                margin-bottom: 0;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="#" class="logo-link">
+            <div class="logo-container">
+                <svg class="logo-svg" viewBox="0 0 100 100">
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00ffaa" />
+                            <stop offset="100%" stop-color="#0088ff" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="10" y="10" width="80" height="80" rx="15" fill="url(#logoGradient)" />
+                    <path d="M30,30 L70,30 L70,50 L50,50 L50,70 L30,70 Z" fill="white" />
+                </svg>
+                <div class="logo-text">DUB</div>
+            </div>
+            <p>Earn $DUB by sharing your unused bandwidth</p>
+        </a>
+    </header>
+
+    <!-- Dashboard Page Content -->
+    <main class="dashboard">
+        <div class="glass-card">
+            <h2><i class="fas fa-chart-line"></i> Earnings Dashboard SEASON 0!</h2>
+            <div class="graph-container">
+                <div class="graph-y-axis">
+                    <span id="graphMax">100</span>
+                    <span>75</span>
+                    <span>50</span>
+                    <span>25</span>
+                    <span>0</span>
+                </div>
+                <div class="graph-content">
+                    <div class="graph-header">
+                        <div>Daily Earnings</div>
+                        <div class="graph-date" id="currentDate"></div>
+                    </div>
+                    <svg class="graph-svg" viewBox="0 0 500 250" preserveAspectRatio="none" id="graphSvg">
+                        <!-- Horizontal baseline -->
+                        <line x1="0" y1="250" x2="500" y2="250" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+                        <!-- Bars will be generated by JavaScript -->
+                    </svg>
+                    <div class="graph-x-axis" id="xAxisDates">
+                        <!-- Dates will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            <div id="earningsDisplay"><B>0.00 $DUB</B></div>
+        </div>
+
+        <div class="glass-card">
+            <h2><i class="fas fa-network-wired"></i> Mining Control</h2>
+            <button id="mineBtn" class="mine-btn">
+                <i class="fas fa-power-off"></i> CONNECT
+            </button>
+            <div id="miningStatus" style="margin-top: 1rem;">
+                <i class="fas fa-circle" style="color: #ff5555;"></i> Status: OFFLINE
+            </div>
+            <div id="connectionStatus" style="margin-top: 0.5rem; font-size: 0.9rem; color: rgba(255,255,255,0.7);"></div>
+        </div>
+
+        <div class="glass-card">
+            <h2><i class="fas fa-user-friends"></i> Referral Program</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Referrals</div>
+                    <div class="stat-value" id="totalReferrals">0</div>
+                    <div class="stat-label">Active Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Referral Earnings</div>
+                    <div class="stat-value" id="referralEarnings">0.00</div>
+                    <div class="stat-label">$DUB</div>
+                </div>
+            </div>
+            <p>Earn 10% of your friend's mining rewards!</p>
+            <div class="referral-code">
+                <input type="text" id="refCode" value="DUB-XXXX-XXXX" readonly>
+                <button onclick="copyReferral()">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h2><i class="fas fa-bolt"></i> Boost Your Mining</h2>
+            <p>Increase your mining speed with these boosts:</p>
+            
+            <div class="boost-container">
+                <div class="boost-card">
+                    <div class="boost-icon"><i class="fab fa-chrome"></i></div>
+                    <h3>Browser Extension</h3>
+                    <div class="boost-multiplier">3x Mining Speed</div>
+                    <p>Install our Chrome extension to mine while you browse</p>
+                    <button class="boost-btn" id="extensionBtn">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+                
+                <div class="boost-card">
+                    <div class="boost-icon"><i class="fab fa-telegram"></i></div>
+                    <h3>Telegram Bot</h3>
+                    <div class="boost-multiplier">1.5x Mining Speed</div>
+                    <p>Join our Telegram bot to earn extra rewards</p>
+                    <button class="boost-btn" id="telegramBtn">
+                        <i class="fab fa-telegram"></i> Join
+                    </button>
+                </div>
+                
+                <div class="boost-card">
+                    <div class="boost-icon"><i class="fas fa-desktop"></i></div>
+                    <h3>Desktop App</h3>
+                    <div class="boost-multiplier">5x Mining Speed</div>
+                    <p>Maximize earnings with our desktop application</p>
+                    <button class="boost-btn" id="desktopBtn">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h2><i class="fas fa-tasks"></i> Available Tasks</h2>
+            
+            <div class="task-card">
+                <div class="task-info">
+                    <h3>Follow @DUBCOIN9 on Twitter</h3>
+                    <p>Follow our official Twitter account for updates and rewards</p>
+                </div>
+                <div class="task-reward">+3000 DUB</div>
+                <button class="task-btn" id="twitterTaskBtn">Claim</button>
+            </div>
+            
+            <div class="task-card">
+                <div class="task-info">
+                    <h3>Join Telegram Channel</h3>
+                    <p>Join our official Telegram channel for updates</p>
+                </div>
+                <div class="task-reward">+2000 DUB</div>
+                <button class="task-btn" id="telegramTaskBtn">Claim</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Verification Modal (hidden by default) -->
+    <div id="verificationModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Twitter Follow Verification</h3>
+            <p>Please enter the verification code from our Twitter page (@DUBCOIN9) to confirm you followed us.</p>
+            <input type="text" id="verificationCode" class="modal-input" placeholder="Enter verification code">
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="cancelVerification">Cancel</button>
+                <button class="modal-btn submit" id="submitVerification">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Connect Modal (hidden by default) -->
+    <div id="appConnectModal" class="app-connect-modal" style="display: none;">
+        <div class="app-connect-content">
+            <div class="app-connect-icon" id="appConnectIcon"></div>
+            <h3 id="appConnectTitle">Connect to App</h3>
+            <p id="appConnectMessage">Please open the app and click 'Connect' to activate your mining boost.</p>
+            <button class="task-btn" id="appConnectCheckBtn" style="margin-top: 1.5rem;">
+                <i class="fas fa-sync-alt"></i> Check Connection
+            </button>
+            <button class="modal-btn cancel" id="appConnectCancelBtn" style="margin-top: 1rem;">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Mining Simulation
+        const mineBtn = document.getElementById('mineBtn');
+        const miningStatus = document.getElementById('miningStatus');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const earningsDisplay = document.getElementById('earningsDisplay');
+        const twitterTaskBtn = document.getElementById('twitterTaskBtn');
+        const telegramTaskBtn = document.getElementById('telegramTaskBtn');
+        const verificationModal = document.getElementById('verificationModal');
+        const verificationCodeInput = document.getElementById('verificationCode');
+        const cancelVerification = document.getElementById('cancelVerification');
+        const submitVerification = document.getElementById('submitVerification');
+        const currentDateElement = document.getElementById('currentDate');
+        const extensionBtn = document.getElementById('extensionBtn');
+        const telegramBtn = document.getElementById('telegramBtn');
+        const desktopBtn = document.getElementById('desktopBtn');
+        const graphMax = document.getElementById('graphMax');
+        const graphSvg = document.getElementById('graphSvg');
+        const xAxisDates = document.getElementById('xAxisDates');
+
+        // App connect modal elements
+        const appConnectModal = document.getElementById('appConnectModal');
+        const appConnectIcon = document.getElementById('appConnectIcon');
+        const appConnectTitle = document.getElementById('appConnectTitle');
+        const appConnectMessage = document.getElementById('appConnectMessage');
+        const appConnectCheckBtn = document.getElementById('appConnectCheckBtn');
+        const appConnectCancelBtn = document.getElementById('appConnectCancelBtn');
+
+        // Referral elements
+        const totalReferrals = document.getElementById('totalReferrals');
+        const referralEarnings = document.getElementById('referralEarnings');
+        const refCode = document.getElementById('refCode');
+
+        let isMining = false;
+        let isConnecting = false;
+        let earnings = 0;
+        let miningInterval;
+        const correctVerificationCode = '999';
+        let earningsHistory = []; // Will store daily earnings
+        let lastUpdateTime = Date.now();
+        let miningMultiplier = 1;
+        let bandwidthSpeed = 10; // Simulated bandwidth speed (Mbps)
+        let activeBoosts = {
+            extension: false,
+            telegram: false,
+            desktop: false
+        };
+
+        // Track which apps are downloaded but not connected
+        let downloadedApps = {
+            extension: false,
+            telegram: false,
+            desktop: false
+        };
+
+        // Referral stats
+        let referralEarningsTotal = 0;
+        let referralsCount = 0;
+
+        // Initialize with current date
+        const startDate = new Date();
+        const dateLabels = [];
+        
+        // Generate labels for the last 7 days
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            dateLabels.push(date);
+        }
+
+        // Initialize earnings history with zeros
+        earningsHistory = new Array(7).fill(0);
+
+        // Update date display
+        function updateDate() {
+            const now = new Date();
+            currentDateElement.textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        }
+
+        // Update graph with current earnings data
+        function updateGraph() {
+            // Clear previous bars (keep the baseline)
+            while (graphSvg.childNodes.length > 1) {
+                graphSvg.removeChild(graphSvg.lastChild);
+            }
+            
+            // Calculate max value for scaling (minimum 100 for better visualization)
+            const maxValue = Math.max(100, ...earningsHistory);
+            graphMax.textContent = maxValue.toFixed(0);
+            
+            // Create bars for each day
+            const barWidth = 40;
+            const gap = (500 - (7 * barWidth)) / 6;
+            
+            dateLabels.forEach((date, index) => {
+                const value = earningsHistory[index] || 0;
+                const barHeight = (value / maxValue) * 200;
+                const xPos = index * (barWidth + gap);
+                
+                // Create bar - now starting from bottom (y=250)
+                const bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                bar.setAttribute("x", xPos);
+                bar.setAttribute("y", 250 - barHeight);
+                bar.setAttribute("width", barWidth);
+                bar.setAttribute("height", barHeight);
+                bar.setAttribute("class", "graph-bar");
+                bar.setAttribute("data-value", value.toFixed(2));
+                graphSvg.appendChild(bar);
+                
+                // Add value label if not zero (positioned above the bar)
+                if (value > 0) {
+                    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    text.setAttribute("x", xPos + barWidth/2);
+                    text.setAttribute("y", 240 - barHeight); // Position above bar
+                    text.setAttribute("text-anchor", "middle");
+                    text.setAttribute("font-size", "10");
+                    text.setAttribute("fill", "white");
+                    text.textContent = value.toFixed(2);
+                    graphSvg.appendChild(text);
+                }
+            });
+            
+            // Update x-axis dates
+            xAxisDates.innerHTML = '';
+            dateLabels.forEach((date, index) => {
+                const dateElement = document.createElement("span");
+                dateElement.textContent = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                xAxisDates.appendChild(dateElement);
+            });
+        }
+
+        // Update referral stats
+        function updateReferralStats() {
+            referralEarnings.textContent = referralEarningsTotal.toFixed(2);
+            totalReferrals.textContent = referralsCount;
+        }
+
+        // Calculate mining speed based on boosts and bandwidth
+        function calculateMiningSpeed() {
+            let speed = 0.1; // Base speed
+            speed *= miningMultiplier;
+            
+            // Apply boosts only if they're both downloaded AND connected
+            if (activeBoosts.extension) speed *= 3;
+            if (activeBoosts.telegram) speed *= 1.5;
+            if (activeBoosts.desktop) speed *= 5;
+            
+            // Apply bandwidth factor (simulated)
+            speed *= (bandwidthSpeed / 10);
+            
+            return speed;
+        }
+
+        // Simulate collecting user data
+        function collectUserData() {
+            // In a real implementation, this would collect various data points
+            const dataPoints = [
+                'Browser: ' + navigator.userAgent,
+                'IP: 192.168.1.1', // Simulated
+                'Location: ' + Intl.DateTimeFormat().resolvedOptions().timeZone,
+                'Device: ' + (window.innerWidth > 768 ? 'Desktop' : 'Mobile'),
+                'Bandwidth: ' + bandwidthSpeed + 'Mbps',
+                'Active at: ' + new Date().toISOString()
+            ];
+            
+            console.log('Collected user data:', dataPoints);
+            // In a real app, this would be sent to your server
+        }
+
+        // Show app connect modal
+        function showAppConnectModal(app) {
+            let icon, title, message;
+            
+            switch(app) {
+                case 'extension':
+                    icon = '<i class="fab fa-chrome"></i>';
+                    title = 'Connect Browser Extension';
+                    message = 'Please open the DUB extension and click "Connect" to activate your 3x mining boost.';
+                    break;
+                case 'telegram':
+                    icon = '<i class="fab fa-telegram"></i>';
+                    title = 'Connect Telegram Bot';
+                    message = 'Please open the DUB Telegram bot and click "Connect" to activate your 1.5x mining boost.';
+                    break;
+                case 'desktop':
+                    icon = '<i class="fas fa-desktop"></i>';
+                    title = 'Connect Desktop App';
+                    message = 'Please open the DUB Desktop app and click "Connect" to activate your 5x mining boost.';
+                    break;
+            }
+            
+            appConnectIcon.innerHTML = icon;
+            appConnectTitle.textContent = title;
+            appConnectMessage.textContent = message;
+            appConnectModal.style.display = 'flex';
+            
+            // Set up check button handler
+            appConnectCheckBtn.onclick = function() {
+                // Simulate checking connection (in a real app, this would ping the app)
+                if (Math.random() > 0.3) { // 70% chance of success for demo
+                    activeBoosts[app] = true;
+                    appConnectModal.style.display = 'none';
+                    
+                    // Update the button in the UI
+                    const btn = document.getElementById(`${app}Btn`);
+                    btn.innerHTML = '<i class="fas fa-check"></i> Connected';
+                    btn.classList.add('connected');
+                    
+                    alert(`${title.split(' ')[2]} connected! Mining speed increased.`);
+                    
+                    if (isMining) {
+                        connectionStatus.textContent = 'Mining at ' + bandwidthSpeed + 'Mbps (' + (calculateMiningSpeed() * 100).toFixed(0) + '% speed)';
+                    }
+                } else {
+                    alert('Connection not detected. Please make sure you clicked "Connect" in the app.');
+                }
+            };
+        }
+
+        // Initialize
+        updateDate();
+        updateGraph();
+        updateReferralStats();
+        setInterval(updateDate, 1000);
+
+        // Fixed Connect Button Functionality
+        mineBtn.addEventListener('click', function() {
+            if (isConnecting) return;
+            
+            if (!isMining) {
+                // Start connecting sequence
+                isConnecting = true;
+                mineBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> CONNECTING';
+                mineBtn.classList.add('connecting');
+                connectionStatus.textContent = 'Establishing connection...';
+                
+                // Simulate connection process
+                setTimeout(function() {
+                    connectionStatus.textContent = 'Analyzing network...';
+                    collectUserData(); // Collect data during connection
+                }, 1500);
+                
+                setTimeout(function() {
+                    connectionStatus.textContent = 'Optimizing bandwidth...';
+                }, 3000);
+                
+                setTimeout(function() {
+                    isConnecting = false;
+                    isMining = true;
+                    mineBtn.innerHTML = '<i class="fas fa-power-off"></i> DISCONNECT';
+                    mineBtn.classList.remove('connecting');
+                    mineBtn.classList.add('active');
+                    miningStatus.innerHTML = '<i class="fas fa-circle" style="color: #00ff55;"></i> Status: CONNECTED';
+                    connectionStatus.textContent = 'Mining at ' + bandwidthSpeed + 'Mbps (' + (calculateMiningSpeed() * 100).toFixed(0) + '% speed)';
+                    
+                    // Start mining
+                    miningInterval = setInterval(function() {
+                        const minedAmount = calculateMiningSpeed() * Math.random();
+                        earnings += minedAmount;
+                        earningsDisplay.textContent = earnings.toFixed(2) + ' $DUB';
+                        
+                        // Update today's earnings in history
+                        const todayIndex = 6; // Last index is today
+                        earningsHistory[todayIndex] = earnings;
+                        
+                        // Update graph every second for smooth animation
+                        updateGraph();
+                        
+                        // Simulate referral earnings (10% of mining)
+                        if (Math.random() > 0.9) {
+                            referralEarningsTotal += minedAmount * 0.1;
+                            updateReferralStats();
+                        }
+                    }, 1000);
+                }, 4500);
+            } else {
+                // Disconnect immediately
+                isMining = false;
+                clearInterval(miningInterval);
+                mineBtn.innerHTML = '<i class="fas fa-power-off"></i> CONNECT';
+                mineBtn.classList.remove('active');
+                miningStatus.innerHTML = '<i class="fas fa-circle" style="color: #ff5555;"></i> Status: OFFLINE';
+                connectionStatus.textContent = '';
+                updateGraph();
+            }
+        });
+
+        // Copy Referral
+        function copyReferral() {
+            refCode.select();
+            document.execCommand('copy');
+            alert('Referral link copied!');
+        }
+
+        // Boost Buttons - Now requires connecting in the app
+        extensionBtn.addEventListener('click', function() {
+            if (!downloadedApps.extension) {
+                // Simulate download
+                downloadedApps.extension = true;
+                this.innerHTML = '<i class="fas fa-plug"></i> Connect';
+                alert('Extension downloaded! Please connect it to activate the boost.');
+                
+                // Show connect modal
+                showAppConnectModal('extension');
+            } else if (!activeBoosts.extension) {
+                // Show connect modal if not connected
+                showAppConnectModal('extension');
+            }
+        });
+
+        telegramBtn.addEventListener('click', function() {
+            if (!downloadedApps.telegram) {
+                // Simulate joining Telegram
+                downloadedApps.telegram = true;
+                this.innerHTML = '<i class="fas fa-plug"></i> Connect';
+                alert('Telegram joined! Please connect the bot to activate the boost.');
+                
+                // Show connect modal
+                showAppConnectModal('telegram');
+            } else if (!activeBoosts.telegram) {
+                // Show connect modal if not connected
+                showAppConnectModal('telegram');
+            }
+        });
+
+        desktopBtn.addEventListener('click', function() {
+            if (!downloadedApps.desktop) {
+                // Simulate download
+                downloadedApps.desktop = true;
+                this.innerHTML = '<i class="fas fa-plug"></i> Connect';
+                alert('Desktop app downloaded! Please connect it to activate the boost.');
+                
+                // Show connect modal
+                showAppConnectModal('desktop');
+            } else if (!activeBoosts.desktop) {
+                // Show connect modal if not connected
+                showAppConnectModal('desktop');
+            }
+        });
+
+        // Twitter Task Button
+        twitterTaskBtn.addEventListener('click', function() {
+            window.open('https://x.com/DUBCOIN9', '_blank');
+            verificationModal.style.display = 'flex';
+            verificationCodeInput.value = '';
+        });
+
+        // Telegram Task Button
+        telegramTaskBtn.addEventListener('click', function() {
+            window.open('https://t.me/DUBCOIN9', '_blank');
+            setTimeout(function() {
+                earnings += 2000;
+                earningsHistory[6] = earnings; // Update today's earnings
+                earningsDisplay.textContent = earnings.toFixed(2) + ' $DUB';
+                this.textContent = 'Claimed';
+                this.disabled = true;
+                updateGraph();
+                alert('Telegram task completed! 2000 DUB has been added to your balance.');
+            }.bind(this), 2000);
+        });
+
+        // Cancel Verification
+        cancelVerification.addEventListener('click', function() {
+            verificationModal.style.display = 'none';
+        });
+
+        // Submit Verification
+        submitVerification.addEventListener('click', function() {
+            const userCode = verificationCodeInput.value.trim();
+            
+            if (userCode === correctVerificationCode) {
+                earnings += 3000;
+                earningsHistory[6] = earnings; // Update today's earnings
+                earningsDisplay.textContent = earnings.toFixed(2) + ' $DUB';
+                
+                twitterTaskBtn.textContent = 'Claimed';
+                twitterTaskBtn.disabled = true;
+                
+                verificationModal.style.display = 'none';
+                updateGraph();
+                
+                alert('Verification successful! 3000 DUB has been added to your balance.');
+            } else {
+                alert('Incorrect verification code. Please check the code and try again.');
+            }
+        });
+
+        // App Connect Modal Cancel Button
+        appConnectCancelBtn.addEventListener('click', function() {
+            appConnectModal.style.display = 'none';
+        });
+
+        // Simulate network speed detection
+        setTimeout(function() {
+            // Random bandwidth between 5-100 Mbps for simulation
+            bandwidthSpeed = Math.floor(Math.random() * 95) + 5;
+            if (isMining) {
+                connectionStatus.textContent = 'Mining at ' + bandwidthSpeed + 'Mbps (' + (calculateMiningSpeed() * 100).toFixed(0) + '% speed)';
+            }
+        }, 10000);
+
+        // Simulate a referral (for demo purposes)
+        setTimeout(function() {
+            if (Math.random() > 0.7) {
+                referralsCount++;
+                referralEarningsTotal += (Math.random() * 10).toFixed(2);
+                updateReferralStats();
+            }
+        }, 8000);
+    </script>
+</body>
+</html>
