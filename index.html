@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DUB - Premium Bandwidth Sharing</title>
-    <script src="content.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -30,18 +30,6 @@
             flex-direction: column;
         }
 
-        /* Glassmorphism Panel */
-        .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-        }
-
         /* Header with new logo - Modified to shift logo right */
         header {
             background: linear-gradient(90deg, var(--primary), var(--secondary));
@@ -61,6 +49,20 @@
             align-items: center;
             gap: 1rem;
             margin-right: 3.5rem;
+            position: relative;
+        }
+
+        .beta-badge {
+            position: absolute;
+            bottom: -15px;
+            left: 50px;
+            background: var(--primary);
+            color: var(--dark);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            transform: translateX(-50%);
         }
 
         .logo-svg {
@@ -81,6 +83,18 @@
         @keyframes gradient {
             0% { background-position: 0% center; }
             100% { background-position: 200% center; }
+        }
+
+        /* Glassmorphism Panel */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         /* Mining Button */
@@ -127,24 +141,15 @@
 
         /* Updated Earnings Graph Styles - COMPLETELY REDESIGNED */
         .graph-container {
-            height: 250px; /* Increased height */
-            margin: 2rem 0;
+            height: 300px;
+            margin: 1rem 0;
             position: relative;
-            display: flex;
-        }
-
-        .graph-y-axis {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            margin-right: 10px;
-            height: 100%;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
+            width: 100%;
         }
 
         .graph-content {
-            flex: 1;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
         }
@@ -162,7 +167,7 @@
 
         .graph-svg {
             width: 100%;
-            flex: 1;
+            height: 100%;
             background: rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             overflow: visible;
@@ -183,6 +188,63 @@
             margin-top: 5px;
             font-size: 0.8rem;
             color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Earnings Display */
+        #earningsDisplay {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--primary);
+        }
+
+        /* Goal System Styles */
+        .goal-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .goal-input {
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: white;
+            width: 100px;
+        }
+
+        .goal-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .goal-progress {
+            margin-left: auto;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .goal-reached {
+            animation: celebrate 2s infinite;
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary);
+            display: none;
+        }
+
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         /* Dashboard Layout */
@@ -227,6 +289,34 @@
         .referral-code button:hover {
             transform: translateY(-2px);
             box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+        }
+
+        /* Data Collection Section */
+        .data-collection {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Admin Panel (hidden by default) */
+        .admin-panel {
+            display: none;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border: 1px solid var(--primary);
+        }
+
+        .admin-btn {
+            background: var(--primary);
+            color: var(--dark);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 0.5rem;
         }
 
         /* Logo Link */
@@ -383,15 +473,31 @@
             transition: all 0.3s;
             margin-top: 1rem;
             width: 100%;
+            pointer-events: none;
+            opacity: 0.7;
         }
 
         .boost-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 255, 170, 0.4);
+            transform: none;
+            box-shadow: none;
         }
 
-        .boost-btn.connected {
-            background: #00aa55;
+        .coming-soon {
+            position: relative;
+        }
+
+        .coming-soon::after {
+            content: "COMING SOON";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
 
         /* Stats Grid */
@@ -466,6 +572,19 @@
                 margin-bottom: 0;
                 padding: 1rem;
             }
+            .goal-container {
+                flex-wrap: wrap;
+            }
+            .goal-progress {
+                margin-left: 0;
+                width: 100%;
+                text-align: center;
+            }
+            .beta-badge {
+                left: 40px;
+                bottom: -12px;
+                font-size: 0.6rem;
+            }
         }
     </style>
 </head>
@@ -484,6 +603,7 @@
                     <path d="M30,30 L70,30 L70,50 L50,50 L50,70 L30,70 Z" fill="white" />
                 </svg>
                 <div class="logo-text">DUB</div>
+                <div class="beta-badge">BETA</div>
             </div>
             <p>Earn $DUB by sharing your unused bandwidth</p>
         </a>
@@ -493,14 +613,20 @@
     <main class="dashboard">
         <div class="glass-card">
             <h2><i class="fas fa-chart-line"></i> Earnings Dashboard SEASON 0!</h2>
+            
+            <!-- Goal System -->
+            <div class="goal-container">
+                <span>Today's Goal:</span>
+                <input type="number" id="dailyGoal" class="goal-input" placeholder="1000" min="1">
+                <button id="setGoalBtn" class="goal-btn">Set Goal</button>
+                <div class="goal-progress" id="goalProgress">0/0 DUB</div>
+            </div>
+            <div class="goal-reached" id="goalReached">🎉 Goal Reached! Great Job! 🎉</div>
+            
+            <!-- Earnings Display moved outside the graph -->
+            <div id="earningsDisplay"><B>0.00 <br> $DUB</B></div>
+            
             <div class="graph-container">
-                <div class="graph-y-axis">
-                    <span id="graphMax">100</span>
-                    <span>75</span>
-                    <span>50</span>
-                    <span>25</span>
-                    <span>0</span>
-                </div>
                 <div class="graph-content">
                     <div class="graph-header">
                         <div>Daily Earnings</div>
@@ -516,7 +642,6 @@
                     </div>
                 </div>
             </div>
-            <div id="earningsDisplay"><B>0.00 $DUB</B></div>
         </div>
 
         <div class="glass-card">
@@ -528,6 +653,21 @@
                 <i class="fas fa-circle" style="color: #ff5555;"></i> Status: OFFLINE
             </div>
             <div id="connectionStatus" style="margin-top: 0.5rem; font-size: 0.9rem; color: rgba(255,255,255,0.7);"></div>
+            
+            <!-- Bandwidth Data Collection Section -->
+            <div class="data-collection">
+                <p>Bandwidth sharing data is being collected and sent to our servers while connected</p>
+            </div>
+        </div>
+
+        <!-- Hidden Admin Panel (for demonstration) -->
+        <div id="adminPanel" class="admin-panel">
+            <h3><i class="fas fa-lock"></i> Admin Panel</h3>
+            <p>Total bandwidth shared by all users: <span id="totalBandwidth">0</span> MB</p>
+            <p>Active sessions: <span id="activeSessions">0</span></p>
+            <button id="exportDataBtn" class="admin-btn">
+                <i class="fas fa-file-excel"></i> Export All Data to Excel
+            </button>
         </div>
 
         <div class="glass-card">
@@ -563,7 +703,7 @@
                     <h3>Browser Extension</h3>
                     <div class="boost-multiplier">3x Mining Speed</div>
                     <p>Install our Chrome extension to mine while you browse</p>
-                    <button class="boost-btn" id="extensionBtn">
+                    <button class="boost-btn coming-soon" id="extensionBtn">
                         <i class="fas fa-download"></i> Download
                     </button>
                 </div>
@@ -573,7 +713,7 @@
                     <h3>Telegram Bot</h3>
                     <div class="boost-multiplier">1.5x Mining Speed</div>
                     <p>Join our Telegram bot to earn extra rewards</p>
-                    <button class="boost-btn" id="telegramBtn">
+                    <button class="boost-btn coming-soon" id="telegramBtn">
                         <i class="fab fa-telegram"></i> Join
                     </button>
                 </div>
@@ -583,7 +723,7 @@
                     <h3>Desktop App</h3>
                     <div class="boost-multiplier">5x Mining Speed</div>
                     <p>Maximize earnings with our desktop application</p>
-                    <button class="boost-btn" id="desktopBtn">
+                    <button class="boost-btn coming-soon" id="desktopBtn">
                         <i class="fas fa-download"></i> Download
                     </button>
                 </div>
@@ -657,9 +797,18 @@
         const extensionBtn = document.getElementById('extensionBtn');
         const telegramBtn = document.getElementById('telegramBtn');
         const desktopBtn = document.getElementById('desktopBtn');
-        const graphMax = document.getElementById('graphMax');
         const graphSvg = document.getElementById('graphSvg');
         const xAxisDates = document.getElementById('xAxisDates');
+        const adminPanel = document.getElementById('adminPanel');
+        const exportDataBtn = document.getElementById('exportDataBtn');
+        const totalBandwidthElement = document.getElementById('totalBandwidth');
+        const activeSessionsElement = document.getElementById('activeSessions');
+
+        // Goal system elements
+        const dailyGoalInput = document.getElementById('dailyGoal');
+        const setGoalBtn = document.getElementById('setGoalBtn');
+        const goalProgress = document.getElementById('goalProgress');
+        const goalReachedMessage = document.getElementById('goalReached');
 
         // App connect modal elements
         const appConnectModal = document.getElementById('appConnectModal');
@@ -689,6 +838,83 @@
             desktop: false
         };
 
+        // Server Simulation (in-memory)
+        const server = {
+            bandwidthData: [],
+            totalBandwidth: 0,
+            activeSessions: 0,
+            users: {},
+            
+            // Simulate sending data to server
+            receiveData: function(userId, data) {
+                if (!this.users[userId]) {
+                    this.users[userId] = {
+                        bandwidthData: [],
+                        totalBandwidth: 0
+                    };
+                }
+                
+                this.users[userId].bandwidthData.push(data);
+                this.users[userId].totalBandwidth += data.bandwidthMB;
+                this.totalBandwidth += data.bandwidthMB;
+                
+                // Update admin panel
+                totalBandwidthElement.textContent = this.totalBandwidth.toFixed(2);
+            },
+            
+            // Simulate starting a session
+            startSession: function(userId) {
+                this.activeSessions++;
+                activeSessionsElement.textContent = this.activeSessions;
+            },
+            
+            // Simulate ending a session
+            endSession: function(userId) {
+                this.activeSessions--;
+                activeSessionsElement.textContent = this.activeSessions;
+            },
+            
+            // Export all data to Excel
+            exportAllData: function() {
+                if (Object.keys(this.users).length === 0) {
+                    alert('No data to export yet!');
+                    return;
+                }
+                
+                // Prepare data for export
+                let exportData = [];
+                
+                for (const [userId, userData] of Object.entries(this.users)) {
+                    userData.bandwidthData.forEach(record => {
+                        exportData.push({
+                            'User ID': userId,
+                            'Timestamp': record.timestamp,
+                            'Speed (Mbps)': record.speedMbps,
+                            'Duration (s)': record.durationSeconds,
+                            'Bandwidth (MB)': record.bandwidthMB
+                        });
+                    });
+                }
+                
+                // Create worksheet
+                const ws = XLSX.utils.json_to_sheet(exportData);
+                
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "BandwidthData");
+                
+                // Generate Excel file
+                const fileName = `DUB_Bandwidth_Data_${new Date().toISOString().slice(0,10)}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+            }
+        };
+
+        // Bandwidth data collection
+        let bandwidthData = [];
+        let sessionStartTime = null;
+        let totalBandwidthShared = 0;
+        const userId = 'user_' + Math.random().toString(36).substr(2, 9); // Generate random user ID
+
         // Track which apps are downloaded but not connected
         let downloadedApps = {
             extension: false,
@@ -700,36 +926,50 @@
         let referralEarningsTotal = 0;
         let referralsCount = 0;
 
-        // Initialize with current date
+        // Goal system variables
+        let dailyGoal = 0;
+        let goalReached = false;
+
+        // Initialize with current date as start date
         const startDate = new Date();
-        const dateLabels = [];
         
-        // Generate labels for the last 7 days
-        for (let i = 6; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
+        // Generate labels for the last 7 days starting from today
+        const dateLabels = [];
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(startDate);
+            date.setDate(date.getDate() - (6 - i)); // Creates dates from 6 days ago to today
             dateLabels.push(date);
         }
 
         // Initialize earnings history with zeros
         earningsHistory = new Array(7).fill(0);
 
-        // Update date display
-        function updateDate() {
-            const now = new Date();
-            currentDateElement.textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        // Function to record bandwidth usage and send to server
+        function recordBandwidthUsage(speed, duration) {
+            const timestamp = new Date();
+            const dataPoint = {
+                timestamp: timestamp.toISOString(),
+                speedMbps: speed,
+                durationSeconds: duration,
+                bandwidthMB: (speed * duration) / 8 // Convert Mbps to MB
+            };
+            
+            // Send to simulated server
+            server.receiveData(userId, dataPoint);
+            
+            // Store locally for this session
+            bandwidthData.push(dataPoint);
+            totalBandwidthShared += dataPoint.bandwidthMB;
         }
 
         // Update graph with current earnings data
         function updateGraph() {
             // Clear previous bars (keep the baseline)
-            while (graphSvg.childNodes.length > 1) {
-                graphSvg.removeChild(graphSvg.lastChild);
-            }
+            const bars = graphSvg.querySelectorAll('.graph-bar, text');
+            bars.forEach(bar => bar.remove());
             
-            // Calculate max value for scaling (minimum 100 for better visualization)
-            const maxValue = Math.max(100, ...earningsHistory);
-            graphMax.textContent = maxValue.toFixed(0);
+            // Fixed max value at 10k
+            const maxValue = 10000;
             
             // Create bars for each day
             const barWidth = 40;
@@ -737,10 +977,10 @@
             
             dateLabels.forEach((date, index) => {
                 const value = earningsHistory[index] || 0;
-                const barHeight = (value / maxValue) * 200;
+                const barHeight = (value / maxValue) * 250; // Full height at 10k
                 const xPos = index * (barWidth + gap);
                 
-                // Create bar - now starting from bottom (y=250)
+                // Create bar
                 const bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
                 bar.setAttribute("x", xPos);
                 bar.setAttribute("y", 250 - barHeight);
@@ -750,11 +990,11 @@
                 bar.setAttribute("data-value", value.toFixed(2));
                 graphSvg.appendChild(bar);
                 
-                // Add value label if not zero (positioned above the bar)
+                // Add value label if not zero
                 if (value > 0) {
                     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
                     text.setAttribute("x", xPos + barWidth/2);
-                    text.setAttribute("y", 240 - barHeight); // Position above bar
+                    text.setAttribute("y", 240 - barHeight);
                     text.setAttribute("text-anchor", "middle");
                     text.setAttribute("font-size", "10");
                     text.setAttribute("fill", "white");
@@ -772,10 +1012,22 @@
             });
         }
 
-        // Update referral stats
-        function updateReferralStats() {
-            referralEarnings.textContent = referralEarningsTotal.toFixed(2);
-            totalReferrals.textContent = referralsCount;
+        // Check if goal is reached
+        function checkGoal() {
+            if (dailyGoal > 0 && earnings >= dailyGoal && !goalReached) {
+                goalReached = true;
+                goalReachedMessage.style.display = 'block';
+                setTimeout(() => {
+                    goalReachedMessage.style.display = 'none';
+                }, 5000);
+            }
+            goalProgress.textContent = `${earnings.toFixed(2)}/${dailyGoal} DUB`;
+        }
+
+        // Update date display
+        function updateDate() {
+            const now = new Date();
+            currentDateElement.textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
         }
 
         // Calculate mining speed based on boosts and bandwidth
@@ -860,13 +1112,42 @@
             };
         }
 
+        // Update referral stats
+        function updateReferralStats() {
+            referralEarnings.textContent = referralEarningsTotal.toFixed(2);
+            totalReferrals.textContent = referralsCount;
+        }
+
         // Initialize
         updateDate();
         updateGraph();
         updateReferralStats();
         setInterval(updateDate, 1000);
 
-        // Fixed Connect Button Functionality
+        // Set up admin panel (for demo purposes - would be secured in production)
+        if (window.location.hash === '#admin') {
+            adminPanel.style.display = 'block';
+        }
+
+        // Set up export button
+        exportDataBtn.addEventListener('click', function() {
+            server.exportAllData();
+        });
+
+        // Set Goal Button
+        setGoalBtn.addEventListener('click', function() {
+            const goalValue = parseInt(dailyGoalInput.value);
+            if (goalValue > 0) {
+                dailyGoal = goalValue;
+                goalReached = false;
+                goalProgress.textContent = `${earnings.toFixed(2)}/${dailyGoal} DUB`;
+                alert(`Daily goal set to ${dailyGoal} DUB!`);
+            } else {
+                alert('Please enter a valid goal amount');
+            }
+        });
+
+        // Mining Button
         mineBtn.addEventListener('click', function() {
             if (isConnecting) return;
             
@@ -876,6 +1157,12 @@
                 mineBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> CONNECTING';
                 mineBtn.classList.add('connecting');
                 connectionStatus.textContent = 'Establishing connection...';
+                
+                // Start new session
+                sessionStartTime = new Date();
+                bandwidthData = [];
+                totalBandwidthShared = 0;
+                server.startSession(userId);
                 
                 // Simulate connection process
                 setTimeout(function() {
@@ -896,21 +1183,30 @@
                     miningStatus.innerHTML = '<i class="fas fa-circle" style="color: #00ff55;"></i> Status: CONNECTED';
                     connectionStatus.textContent = 'Mining at ' + bandwidthSpeed + 'Mbps (' + (calculateMiningSpeed() * 100).toFixed(0) + '% speed)';
                     
-                    // Start mining
+                    // Start mining and data collection
+                    let lastRecordTime = Date.now();
                     miningInterval = setInterval(function() {
+                        const now = Date.now();
+                        const duration = (now - lastRecordTime) / 1000; // in seconds
+                        lastRecordTime = now;
+                        
+                        // Record bandwidth usage
+                        recordBandwidthUsage(bandwidthSpeed, duration);
+                        
+                        // Mining rewards calculation
                         const minedAmount = calculateMiningSpeed() * Math.random();
                         earnings += minedAmount;
-                        earningsDisplay.textContent = earnings.toFixed(2) + ' $DUB';
+                        earningsDisplay.innerHTML = `<B>${earnings.toFixed(2)}<br>$DUB</B>`;
                         
                         // Update today's earnings in history
                         const todayIndex = 6; // Last index is today
                         earningsHistory[todayIndex] = earnings;
                         
-                        // Update graph every second for smooth animation
                         updateGraph();
+                        checkGoal(); // Check if goal is reached
                         
-                        // Simulate referral earnings (10% of mining)
-                        if (Math.random() > 0.9) {
+                        // Only generate referral earnings if there are referrals
+                        if (referralsCount > 0 && Math.random() > 0.9) {
                             referralEarningsTotal += minedAmount * 0.1;
                             updateReferralStats();
                         }
@@ -924,6 +1220,15 @@
                 mineBtn.classList.remove('active');
                 miningStatus.innerHTML = '<i class="fas fa-circle" style="color: #ff5555;"></i> Status: OFFLINE';
                 connectionStatus.textContent = '';
+                
+                // Record final bandwidth usage
+                if (sessionStartTime) {
+                    const duration = (new Date() - sessionStartTime) / 1000;
+                    recordBandwidthUsage(bandwidthSpeed, duration);
+                    sessionStartTime = null;
+                    server.endSession(userId);
+                }
+                
                 updateGraph();
             }
         });
@@ -935,50 +1240,20 @@
             alert('Referral link copied!');
         }
 
-        // Boost Buttons - Now requires connecting in the app
-        extensionBtn.addEventListener('click', function() {
-            if (!downloadedApps.extension) {
-                // Simulate download
-                downloadedApps.extension = true;
-                this.innerHTML = '<i class="fas fa-plug"></i> Connect';
-                alert('Extension downloaded! Please connect it to activate the boost.');
-                
-                // Show connect modal
-                showAppConnectModal('extension');
-            } else if (!activeBoosts.extension) {
-                // Show connect modal if not connected
-                showAppConnectModal('extension');
-            }
+        // Boost Buttons - Now show "Coming Soon"
+        extensionBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('DUB Chrome Extension - Coming Soon!');
         });
 
-        telegramBtn.addEventListener('click', function() {
-            if (!downloadedApps.telegram) {
-                // Simulate joining Telegram
-                downloadedApps.telegram = true;
-                this.innerHTML = '<i class="fas fa-plug"></i> Connect';
-                alert('Telegram joined! Please connect the bot to activate the boost.');
-                
-                // Show connect modal
-                showAppConnectModal('telegram');
-            } else if (!activeBoosts.telegram) {
-                // Show connect modal if not connected
-                showAppConnectModal('telegram');
-            }
+        telegramBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('DUB Telegram Bot - Coming Soon!');
         });
 
-        desktopBtn.addEventListener('click', function() {
-            if (!downloadedApps.desktop) {
-                // Simulate download
-                downloadedApps.desktop = true;
-                this.innerHTML = '<i class="fas fa-plug"></i> Connect';
-                alert('Desktop app downloaded! Please connect it to activate the boost.');
-                
-                // Show connect modal
-                showAppConnectModal('desktop');
-            } else if (!activeBoosts.desktop) {
-                // Show connect modal if not connected
-                showAppConnectModal('desktop');
-            }
+        desktopBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('DUB Desktop App - Coming Soon!');
         });
 
         // Twitter Task Button
@@ -994,10 +1269,11 @@
             setTimeout(function() {
                 earnings += 2000;
                 earningsHistory[6] = earnings; // Update today's earnings
-                earningsDisplay.textContent = earnings.toFixed(2) + ' $DUB';
+                earningsDisplay.innerHTML = `<B>${earnings.toFixed(2)}<br>$DUB</B>`;
                 this.textContent = 'Claimed';
                 this.disabled = true;
                 updateGraph();
+                checkGoal();
                 alert('Telegram task completed! 2000 DUB has been added to your balance.');
             }.bind(this), 2000);
         });
@@ -1014,13 +1290,14 @@
             if (userCode === correctVerificationCode) {
                 earnings += 3000;
                 earningsHistory[6] = earnings; // Update today's earnings
-                earningsDisplay.textContent = earnings.toFixed(2) + ' $DUB';
+                earningsDisplay.innerHTML = `<B>${earnings.toFixed(2)}<br>$DUB</B>`;
                 
                 twitterTaskBtn.textContent = 'Claimed';
                 twitterTaskBtn.disabled = true;
                 
                 verificationModal.style.display = 'none';
                 updateGraph();
+                checkGoal();
                 
                 alert('Verification successful! 3000 DUB has been added to your balance.');
             } else {
