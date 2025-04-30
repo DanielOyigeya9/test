@@ -42,6 +42,7 @@
             gap: 1rem;
             position: relative;
             padding-left: 2.5rem;
+            justify-content: space-between;
         }
 
         .logo-container {
@@ -557,6 +558,144 @@
             margin-bottom: 1rem;
         }
 
+        /* Login/Signup Modal */
+        .auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .auth-content {
+            background: var(--dark);
+            padding: 2rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid var(--primary);
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .auth-tab.active {
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.75rem 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: white;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 1rem 0;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .auth-error {
+            color: #ff5555;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        /* User Profile Section */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .logout-btn:hover {
+            opacity: 1;
+        }
+
+        /* Admin Dashboard Styles */
+        .admin-dashboard {
+            display: none;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-table th {
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--primary);
+        }
+
+        .admin-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         /* Responsive adjustments */
         @media (max-width: 767px) {
             header {
@@ -585,203 +724,638 @@
                 bottom: -12px;
                 font-size: 0.6rem;
             }
+            .admin-table {
+                display: block;
+                overflow-x: auto;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <a href="#" class="logo-link">
-            <div class="logo-container">
-                <svg class="logo-svg" viewBox="0 0 100 100">
-                    <defs>
-                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#00ffaa" />
-                            <stop offset="100%" stop-color="#0088ff" />
-                        </linearGradient>
-                    </defs>
-                    <rect x="10" y="10" width="80" height="80" rx="15" fill="url(#logoGradient)" />
-                    <path d="M30,30 L70,30 L70,50 L50,50 L50,70 L30,70 Z" fill="white" />
-                </svg>
-                <div class="logo-text">DUB</div>
-                <div class="beta-badge">BETA</div>
-            </div>
-            <p>Earn $DUB by sharing your unused bandwidth</p>
-        </a>
-    </header>
-
-    <!-- Dashboard Page Content -->
-    <main class="dashboard">
-        <div class="glass-card">
-            <h2><i class="fas fa-chart-line"></i> Earnings Dashboard SEASON 0!</h2>
-            
-            <!-- Goal System -->
-            <div class="goal-container">
-                <span>Today's Goal:</span>
-                <input type="number" id="dailyGoal" class="goal-input" placeholder="1000" min="1">
-                <button id="setGoalBtn" class="goal-btn">Set Goal</button>
-                <div class="goal-progress" id="goalProgress">0/0 DUB</div>
-            </div>
-            <div class="goal-reached" id="goalReached">🎉 Goal Reached! Great Job! 🎉</div>
-            
-            <!-- Earnings Display moved outside the graph -->
-            <div id="earningsDisplay"><B>0.00 <br> $DUB</B></div>
-            
-            <div class="graph-container">
-                <div class="graph-content">
-                    <div class="graph-header">
-                        <div>Daily Earnings</div>
-                        <div class="graph-date" id="currentDate"></div>
-                    </div>
-                    <svg class="graph-svg" viewBox="0 0 500 250" preserveAspectRatio="none" id="graphSvg">
-                        <!-- Horizontal baseline -->
-                        <line x1="0" y1="250" x2="500" y2="250" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
-                        <!-- Bars will be generated by JavaScript -->
-                    </svg>
-                    <div class="graph-x-axis" id="xAxisDates">
-                        <!-- Dates will be generated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="glass-card">
-            <h2><i class="fas fa-network-wired"></i> Mining Control</h2>
-            <button id="mineBtn" class="mine-btn">
-                <i class="fas fa-power-off"></i> CONNECT
-            </button>
-            <div id="miningStatus" style="margin-top: 1rem;">
-                <i class="fas fa-circle" style="color: #ff5555;"></i> Status: OFFLINE
-            </div>
-            <div id="connectionStatus" style="margin-top: 0.5rem; font-size: 0.9rem; color: rgba(255,255,255,0.7);"></div>
-            
-            <!-- Bandwidth Data Collection Section -->
-            <div class="data-collection">
-                <p>Bandwidth sharing data is being collected and sent to our servers while connected</p>
-            </div>
-        </div>
-
-        <!-- Hidden Admin Panel (for demonstration) -->
-        <div id="adminPanel" class="admin-panel">
-            <h3><i class="fas fa-lock"></i> Admin Panel</h3>
-            <p>Total bandwidth shared by all users: <span id="totalBandwidth">0</span> MB</p>
-            <p>Active sessions: <span id="activeSessions">0</span></p>
-            <button id="exportDataBtn" class="admin-btn">
-                <i class="fas fa-file-excel"></i> Export All Data to Excel
-            </button>
-        </div>
-
-        <div class="glass-card">
-            <h2><i class="fas fa-user-friends"></i> Referral Program</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total Referrals</div>
-                    <div class="stat-value" id="totalReferrals">0</div>
-                    <div class="stat-label">Active Today</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Referral Earnings</div>
-                    <div class="stat-value" id="referralEarnings">0.00</div>
-                    <div class="stat-label">$DUB</div>
-                </div>
-            </div>
-            <p>Earn 10% of your friend's mining rewards!</p>
-            <div class="referral-code">
-                <input type="text" id="refCode" value="DUB-XXXX-XXXX" readonly>
-                <button onclick="copyReferral()">
-                    <i class="fas fa-copy"></i> Copy
-                </button>
-            </div>
-        </div>
-
-        <div class="glass-card">
-            <h2><i class="fas fa-bolt"></i> Boost Your Mining</h2>
-            <p>Increase your mining speed with these boosts:</p>
-            
-            <div class="boost-container">
-                <div class="boost-card">
-                    <div class="boost-icon"><i class="fab fa-chrome"></i></div>
-                    <h3>Browser Extension</h3>
-                    <div class="boost-multiplier">3x Mining Speed</div>
-                    <p>Install our Chrome extension to mine while you browse</p>
-                    <button class="boost-btn coming-soon" id="extensionBtn">
-                        <i class="fas fa-download"></i> Download
-                    </button>
-                </div>
-                
-                <div class="boost-card">
-                    <div class="boost-icon"><i class="fab fa-telegram"></i></div>
-                    <h3>Telegram Bot</h3>
-                    <div class="boost-multiplier">1.5x Mining Speed</div>
-                    <p>Join our Telegram bot to earn extra rewards</p>
-                    <button class="boost-btn coming-soon" id="telegramBtn">
-                        <i class="fab fa-telegram"></i> Join
-                    </button>
-                </div>
-                
-                <div class="boost-card">
-                    <div class="boost-icon"><i class="fas fa-desktop"></i></div>
-                    <h3>Desktop App</h3>
-                    <div class="boost-multiplier">5x Mining Speed</div>
-                    <p>Maximize earnings with our desktop application</p>
-                    <button class="boost-btn coming-soon" id="desktopBtn">
-                        <i class="fas fa-download"></i> Download
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="glass-card">
-            <h2><i class="fas fa-tasks"></i> Available Tasks</h2>
-            
-            <div class="task-card">
-                <div class="task-info">
-                    <h3>Follow @DUBCOIN9 on Twitter</h3>
-                    <p>Follow our official Twitter account for updates and rewards</p>
-                </div>
-                <div class="task-reward">+3000 DUB</div>
-                <button class="task-btn" id="twitterTaskBtn">Claim</button>
+    <!-- Auth Modal (shown by default) -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-content">
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="loginTab">Login</div>
+                <div class="auth-tab" id="signupTab">Sign Up</div>
             </div>
             
-            <div class="task-card">
-                <div class="task-info">
-                    <h3>Join Telegram Channel</h3>
-                    <p>Join our official Telegram channel for updates</p>
+            <div class="auth-form active" id="loginForm">
+                <input type="email" id="loginEmail" class="auth-input" placeholder="Email">
+                <input type="password" id="loginPassword" class="auth-input" placeholder="Password">
+                <div class="auth-error" id="loginError">Invalid email or password</div>
+                <button class="auth-btn" id="loginBtn">Login</button>
+                <div style="text-align: center; margin-top: 1rem; font-size: 0.9rem;">
+                    <a href="#" id="forgotPassword" style="color: var(--primary);">Forgot password?</a>
                 </div>
-                <div class="task-reward">+2000 DUB</div>
-                <button class="task-btn" id="telegramTaskBtn">Claim</button>
             </div>
-        </div>
-    </main>
-
-    <!-- Verification Modal (hidden by default) -->
-    <div id="verificationModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <h3>Twitter Follow Verification</h3>
-            <p>Please enter the verification code from our Twitter page (@DUBCOIN9) to confirm you followed us.</p>
-            <input type="text" id="verificationCode" class="modal-input" placeholder="Enter verification code">
-            <div class="modal-actions">
-                <button class="modal-btn cancel" id="cancelVerification">Cancel</button>
-                <button class="modal-btn submit" id="submitVerification">Submit</button>
+            
+            <div class="auth-form" id="signupForm">
+                <input type="text" id="signupName" class="auth-input" placeholder="Full Name">
+                <input type="email" id="signupEmail" class="auth-input" placeholder="Email">
+                <input type="password" id="signupPassword" class="auth-input" placeholder="Password">
+                <input type="password" id="signupConfirmPassword" class="auth-input" placeholder="Confirm Password">
+                <div class="auth-error" id="signupError">Passwords don't match</div>
+                <button class="auth-btn" id="signupBtn">Sign Up</button>
             </div>
         </div>
     </div>
 
-    <!-- App Connect Modal (hidden by default) -->
-    <div id="appConnectModal" class="app-connect-modal" style="display: none;">
-        <div class="app-connect-content">
-            <div class="app-connect-icon" id="appConnectIcon"></div>
-            <h3 id="appConnectTitle">Connect to App</h3>
-            <p id="appConnectMessage">Please open the app and click 'Connect' to activate your mining boost.</p>
-            <button class="task-btn" id="appConnectCheckBtn" style="margin-top: 1.5rem;">
-                <i class="fas fa-sync-alt"></i> Check Connection
-            </button>
-            <button class="modal-btn cancel" id="appConnectCancelBtn" style="margin-top: 1rem;">
-                Cancel
-            </button>
+    <!-- Main App Content (hidden until authenticated) -->
+    <div id="appContent" style="display: none;">
+        <header>
+            <a href="#" class="logo-link">
+                <div class="logo-container">
+                    <svg class="logo-svg" viewBox="0 0 100 100">
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00ffaa" />
+                                <stop offset="100%" stop-color="#0088ff" />
+                            </linearGradient>
+                        </defs>
+                        <rect x="10" y="10" width="80" height="80" rx="15" fill="url(#logoGradient)" />
+                        <path d="M30,30 L70,30 L70,50 L50,50 L50,70 L30,70 Z" fill="white" />
+                    </svg>
+                    <div class="logo-text">DUB</div>
+                    <div class="beta-badge">BETA</div>
+                </div>
+                <p>Earn $DUB by sharing your unused bandwidth</p>
+            </a>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div>
+                    <div class="user-name" id="userName">User</div>
+                    <button class="logout-btn" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Page Content -->
+        <main class="dashboard">
+            <div class="glass-card">
+                <h2><i class="fas fa-chart-line"></i> Earnings Dashboard SEASON 0!</h2>
+                
+                <!-- Goal System -->
+                <div class="goal-container">
+                    <span>Today's Goal:</span>
+                    <input type="number" id="dailyGoal" class="goal-input" placeholder="1000" min="1">
+                    <button id="setGoalBtn" class="goal-btn">Set Goal</button>
+                    <div class="goal-progress" id="goalProgress">0/0 DUB</div>
+                </div>
+                <div class="goal-reached" id="goalReached">🎉 Goal Reached! Great Job! 🎉</div>
+                
+                <!-- Earnings Display moved outside the graph -->
+                <div id="earningsDisplay"><B>0.00 <br> $DUB</B></div>
+                
+                <div class="graph-container">
+                    <div class="graph-content">
+                        <div class="graph-header">
+                            <div>Daily Earnings</div>
+                            <div class="graph-date" id="currentDate"></div>
+                        </div>
+                        <svg class="graph-svg" viewBox="0 0 500 250" preserveAspectRatio="none" id="graphSvg">
+                            <!-- Horizontal baseline -->
+                            <line x1="0" y1="250" x2="500" y2="250" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+                            <!-- Bars will be generated by JavaScript -->
+                        </svg>
+                        <div class="graph-x-axis" id="xAxisDates">
+                            <!-- Dates will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h2><i class="fas fa-network-wired"></i> Mining Control</h2>
+                <button id="mineBtn" class="mine-btn">
+                    <i class="fas fa-power-off"></i> CONNECT
+                </button>
+                <div id="miningStatus" style="margin-top: 1rem;">
+                    <i class="fas fa-circle" style="color: #ff5555;"></i> Status: OFFLINE
+                </div>
+                <div id="connectionStatus" style="margin-top: 0.5rem; font-size: 0.9rem; color: rgba(255,255,255,0.7);"></div>
+                
+                <!-- Bandwidth Data Collection Section -->
+                <div class="data-collection">
+                    <p>Bandwidth sharing data is being collected and sent to our servers while connected</p>
+                </div>
+            </div>
+
+            <!-- Hidden Admin Panel (for demonstration) -->
+            <div id="adminPanel" class="admin-panel">
+                <h3><i class="fas fa-lock"></i> Admin Panel</h3>
+                <p>Total bandwidth shared by all users: <span id="totalBandwidth">0</span> MB</p>
+                <p>Active sessions: <span id="activeSessions">0</span></p>
+                <button id="exportDataBtn" class="admin-btn">
+                    <i class="fas fa-file-excel"></i> Export All Data to Excel
+                </button>
+            </div>
+
+            <div class="glass-card">
+                <h2><i class="fas fa-user-friends"></i> Referral Program</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Referrals</div>
+                        <div class="stat-value" id="totalReferrals">0</div>
+                        <div class="stat-label">Active Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Referral Earnings</div>
+                        <div class="stat-value" id="referralEarnings">0.00</div>
+                        <div class="stat-label">$DUB</div>
+                    </div>
+                </div>
+                <p>Earn 10% of your friend's mining rewards!</p>
+                <div class="referral-code">
+                    <input type="text" id="refCode" value="DUB-XXXX-XXXX" readonly>
+                    <button onclick="copyReferral()">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h2><i class="fas fa-bolt"></i> Boost Your Mining</h2>
+                <p>Increase your mining speed with these boosts:</p>
+                
+                <div class="boost-container">
+                    <div class="boost-card">
+                        <div class="boost-icon"><i class="fab fa-chrome"></i></div>
+                        <h3>Browser Extension</h3>
+                        <div class="boost-multiplier">3x Mining Speed</div>
+                        <p>Install our Chrome extension to mine while you browse</p>
+                        <button class="boost-btn coming-soon" id="extensionBtn">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                    
+                    <div class="boost-card">
+                        <div class="boost-icon"><i class="fab fa-telegram"></i></div>
+                        <h3>Telegram Bot</h3>
+                        <div class="boost-multiplier">1.5x Mining Speed</div>
+                        <p>Join our Telegram bot to earn extra rewards</p>
+                        <button class="boost-btn coming-soon" id="telegramBtn">
+                            <i class="fab fa-telegram"></i> Join
+                        </button>
+                    </div>
+                    
+                    <div class="boost-card">
+                        <div class="boost-icon"><i class="fas fa-desktop"></i></div>
+                        <h3>Desktop App</h3>
+                        <div class="boost-multiplier">5x Mining Speed</div>
+                        <p>Maximize earnings with our desktop application</p>
+                        <button class="boost-btn coming-soon" id="desktopBtn">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h2><i class="fas fa-tasks"></i> Available Tasks</h2>
+                
+                <div class="task-card">
+                    <div class="task-info">
+                        <h3>Follow @DUBCOIN9 on Twitter</h3>
+                        <p>Follow our official Twitter account for updates and rewards</p>
+                    </div>
+                    <div class="task-reward">+3000 DUB</div>
+                    <button class="task-btn" id="twitterTaskBtn">Claim</button>
+                </div>
+                
+                <div class="task-card">
+                    <div class="task-info">
+                        <h3>Join Telegram Channel</h3>
+                        <p>Join our official Telegram channel for updates</p>
+                    </div>
+                    <div class="task-reward">+2000 DUB</div>
+                    <button class="task-btn" id="telegramTaskBtn">Claim</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Admin Dashboard (hidden by default) -->
+        <div id="adminDashboard" class="admin-dashboard">
+            <div class="glass-card">
+                <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-value" id="adminTotalUsers">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Active Today</div>
+                        <div class="stat-value" id="adminActiveUsers">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Bandwidth</div>
+                        <div class="stat-value" id="adminTotalBandwidth">0</div>
+                        <div class="stat-label">GB</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Earnings</div>
+                        <div class="stat-value" id="adminTotalEarnings">0</div>
+                        <div class="stat-label">DUB</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 2rem;"><i class="fas fa-users"></i> User Activity</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Bandwidth</th>
+                            <th>Earnings</th>
+                            <th>Last Active</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminUserTable">
+                        <!-- User data will be populated here -->
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 1.5rem;">
+                    <button id="adminExportBtn" class="admin-btn">
+                        <i class="fas fa-file-excel"></i> Export All User Data
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verification Modal (hidden by default) -->
+        <div id="verificationModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <h3>Twitter Follow Verification</h3>
+                <p>Please enter the verification code from our Twitter page (@DUBCOIN9) to confirm you followed us.</p>
+                <input type="text" id="verificationCode" class="modal-input" placeholder="Enter verification code">
+                <div class="modal-actions">
+                    <button class="modal-btn cancel" id="cancelVerification">Cancel</button>
+                    <button class="modal-btn submit" id="submitVerification">Submit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- App Connect Modal (hidden by default) -->
+        <div id="appConnectModal" class="app-connect-modal" style="display: none;">
+            <div class="app-connect-content">
+                <div class="app-connect-icon" id="appConnectIcon"></div>
+                <h3 id="appConnectTitle">Connect to App</h3>
+                <p id="appConnectMessage">Please open the app and click 'Connect' to activate your mining boost.</p>
+                <button class="task-btn" id="appConnectCheckBtn" style="margin-top: 1.5rem;">
+                    <i class="fas fa-sync-alt"></i> Check Connection
+                </button>
+                <button class="modal-btn cancel" id="appConnectCancelBtn" style="margin-top: 1rem;">
+                    Cancel
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
+        // User Authentication System
+        const authModal = document.getElementById('authModal');
+        const loginTab = document.getElementById('loginTab');
+        const signupTab = document.getElementById('signupTab');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const signupName = document.getElementById('signupName');
+        const signupEmail = document.getElementById('signupEmail');
+        const signupPassword = document.getElementById('signupPassword');
+        const signupConfirmPassword = document.getElementById('signupConfirmPassword');
+        const signupBtn = document.getElementById('signupBtn');
+        const signupError = document.getElementById('signupError');
+        const forgotPassword = document.getElementById('forgotPassword');
+        const appContent = document.getElementById('appContent');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userName = document.getElementById('userName');
+        const userAvatar = document.getElementById('userAvatar');
+        const adminDashboard = document.getElementById('adminDashboard');
+
+        // Admin credentials (in a real app, this would be server-side)
+        const ADMIN_EMAIL = "admin@dub.com";
+        const ADMIN_PASSWORD = "DUBadmin123!";
+
+        // User database simulation (in a real app, this would be server-side)
+        let usersDatabase = {
+            [ADMIN_EMAIL]: {
+                name: "Admin",
+                password: ADMIN_PASSWORD,
+                isAdmin: true,
+                userId: "admin_001",
+                earnings: 0,
+                bandwidthShared: 0,
+                lastActive: null,
+                referralCode: "DUB-ADMIN-001",
+                referrals: []
+            }
+        };
+
+        // Current user session
+        let currentUser = null;
+
+        // Switch between login and signup tabs
+        loginTab.addEventListener('click', function() {
+            loginTab.classList.add('active');
+            signupTab.classList.remove('active');
+            loginForm.classList.add('active');
+            signupForm.classList.remove('active');
+            loginError.style.display = 'none';
+        });
+
+        signupTab.addEventListener('click', function() {
+            signupTab.classList.add('active');
+            loginTab.classList.remove('active');
+            signupForm.classList.add('active');
+            loginForm.classList.remove('active');
+            signupError.style.display = 'none';
+        });
+
+        // Login function
+        loginBtn.addEventListener('click', function() {
+            const email = loginEmail.value.trim();
+            const password = loginPassword.value;
+            
+            if (!email || !password) {
+                loginError.textContent = "Please enter both email and password";
+                loginError.style.display = 'block';
+                return;
+            }
+            
+            // Check if user exists and password matches
+            if (usersDatabase[email] && usersDatabase[email].password === password) {
+                // Successful login
+                currentUser = {
+                    email: email,
+                    name: usersDatabase[email].name,
+                    isAdmin: usersDatabase[email].isAdmin || false,
+                    userId: usersDatabase[email].userId,
+                    referralCode: usersDatabase[email].referralCode
+                };
+                
+                // Update last active time
+                usersDatabase[email].lastActive = new Date().toISOString();
+                
+                // Hide auth modal and show app content
+                authModal.style.display = 'none';
+                appContent.style.display = 'block';
+                
+                // Update UI with user info
+                userName.textContent = currentUser.name;
+                userAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+                
+                // Generate random color for avatar
+                const colors = ['#00ffaa', '#0088ff', '#ff00aa', '#aa00ff', '#ffaa00'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                userAvatar.style.background = randomColor;
+                
+                // If admin, show admin dashboard
+                if (currentUser.isAdmin) {
+                    adminDashboard.style.display = 'block';
+                    updateAdminDashboard();
+                }
+                
+                // Initialize user data
+                initializeUserData();
+            } else {
+                loginError.textContent = "Invalid email or password";
+                loginError.style.display = 'block';
+            }
+        });
+
+        // Signup function
+        signupBtn.addEventListener('click', function() {
+            const name = signupName.value.trim();
+            const email = signupEmail.value.trim();
+            const password = signupPassword.value;
+            const confirmPassword = signupConfirmPassword.value;
+            
+            // Validate inputs
+            if (!name || !email || !password || !confirmPassword) {
+                signupError.textContent = "Please fill in all fields";
+                signupError.style.display = 'block';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                signupError.textContent = "Passwords don't match";
+                signupError.style.display = 'block';
+                return;
+            }
+            
+            if (password.length < 8) {
+                signupError.textContent = "Password must be at least 8 characters";
+                signupError.style.display = 'block';
+                return;
+            }
+            
+            // Check if email already exists
+            if (usersDatabase[email]) {
+                signupError.textContent = "Email already registered";
+                signupError.style.display = 'block';
+                return;
+            }
+            
+            // Create new user
+            const userId = 'user_' + Math.random().toString(36).substr(2, 9);
+            const referralCode = 'DUB-' + Math.random().toString(36).substr(2, 4).toUpperCase() + '-' + 
+                                 Math.random().toString(36).substr(2, 4).toUpperCase();
+            
+            usersDatabase[email] = {
+                name: name,
+                password: password,
+                isAdmin: false,
+                userId: userId,
+                earnings: 0,
+                bandwidthShared: 0,
+                lastActive: null,
+                referralCode: referralCode,
+                referrals: [],
+                earningsHistory: new Array(7).fill(0),
+                dailyGoal: 0
+            };
+            
+            // Auto-login the new user
+            currentUser = {
+                email: email,
+                name: name,
+                isAdmin: false,
+                userId: userId,
+                referralCode: referralCode
+            };
+            
+            // Hide auth modal and show app content
+            authModal.style.display = 'none';
+            appContent.style.display = 'block';
+            
+            // Update UI with user info
+            userName.textContent = currentUser.name;
+            userAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+            
+            // Generate random color for avatar
+            const colors = ['#00ffaa', '#0088ff', '#ff00aa', '#aa00ff', '#ffaa00'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            userAvatar.style.background = randomColor;
+            
+            // Initialize user data
+            initializeUserData();
+            
+            // Update referral code in UI
+            refCode.value = referralCode;
+        });
+
+        // Forgot password
+        forgotPassword.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Password reset link has been sent to your email (simulated)');
+        });
+
+        // Logout function
+        logoutBtn.addEventListener('click', function() {
+            currentUser = null;
+            appContent.style.display = 'none';
+            authModal.style.display = 'flex';
+            
+            // Reset forms
+            loginEmail.value = '';
+            loginPassword.value = '';
+            loginError.style.display = 'none';
+            
+            // Switch to login tab
+            loginTab.classList.add('active');
+            signupTab.classList.remove('active');
+            loginForm.classList.add('active');
+            signupForm.classList.remove('active');
+        });
+
+        // Initialize user data when logged in
+        function initializeUserData() {
+            // Load user data from "database"
+            const userData = usersDatabase[currentUser.email];
+            
+            // Set earnings
+            earnings = userData.earnings || 0;
+            earningsDisplay.innerHTML = `<B>${earnings.toFixed(2)}<br>$DUB</B>`;
+            
+            // Set earnings history
+            if (userData.earningsHistory) {
+                earningsHistory = userData.earningsHistory;
+            } else {
+                earningsHistory = new Array(7).fill(0);
+            }
+            
+            // Set daily goal
+            if (userData.dailyGoal) {
+                dailyGoal = userData.dailyGoal;
+                dailyGoalInput.value = dailyGoal;
+                goalProgress.textContent = `${earnings.toFixed(2)}/${dailyGoal} DUB`;
+            }
+            
+            // Set referral stats
+            if (userData.referrals) {
+                referralsCount = userData.referrals.length;
+                referralEarningsTotal = userData.referrals.reduce((sum, ref) => sum + ref.earnings, 0);
+                updateReferralStats();
+            }
+            
+            // Set referral code
+            refCode.value = currentUser.referralCode;
+            
+            // Update UI
+            updateGraph();
+            updateDate();
+        }
+
+        // Update admin dashboard
+        function updateAdminDashboard() {
+            if (!currentUser || !currentUser.isAdmin) return;
+            
+            // Calculate admin stats
+            const userEmails = Object.keys(usersDatabase);
+            const totalUsers = userEmails.length - 1; // Exclude admin
+            const activeUsers = userEmails.filter(email => {
+                const user = usersDatabase[email];
+                return !user.isAdmin && user.lastActive && 
+                       (new Date() - new Date(user.lastActive)) < 24 * 60 * 60 * 1000;
+            }).length;
+            
+            const totalBandwidthGB = Object.values(usersDatabase)
+                .filter(user => !user.isAdmin)
+                .reduce((sum, user) => sum + (user.bandwidthShared || 0), 0) / 1024;
+            
+            const totalEarnings = Object.values(usersDatabase)
+                .filter(user => !user.isAdmin)
+                .reduce((sum, user) => sum + (user.earnings || 0), 0);
+            
+            // Update admin stats
+            document.getElementById('adminTotalUsers').textContent = totalUsers;
+            document.getElementById('adminActiveUsers').textContent = activeUsers;
+            document.getElementById('adminTotalBandwidth').textContent = totalBandwidthGB.toFixed(2);
+            document.getElementById('adminTotalEarnings').textContent = totalEarnings.toFixed(2);
+            
+            // Update user table
+            const userTable = document.getElementById('adminUserTable');
+            userTable.innerHTML = '';
+            
+            userEmails.forEach(email => {
+                const user = usersDatabase[email];
+                if (user.isAdmin) return;
+                
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${user.userId}</td>
+                    <td>${user.name}</td>
+                    <td>${email}</td>
+                    <td>${(user.bandwidthShared / 1024).toFixed(2)} GB</td>
+                    <td>${user.earnings.toFixed(2)} DUB</td>
+                    <td>${user.lastActive ? new Date(user.lastActive).toLocaleString() : 'Never'}</td>
+                `;
+                
+                userTable.appendChild(row);
+            });
+        }
+
+        // Admin export button
+        document.getElementById('adminExportBtn').addEventListener('click', function() {
+            // Prepare data for export
+            let exportData = [];
+            
+            for (const [email, user] of Object.entries(usersDatabase)) {
+                if (user.isAdmin) continue;
+                
+                exportData.push({
+                    'User ID': user.userId,
+                    'Name': user.name,
+                    'Email': email,
+                    'Bandwidth Shared (GB)': (user.bandwidthShared / 1024).toFixed(2),
+                    'Total Earnings (DUB)': user.earnings.toFixed(2),
+                    'Referral Code': user.referralCode,
+                    'Referrals Count': user.referrals.length,
+                    'Referral Earnings': user.referrals.reduce((sum, ref) => sum + ref.earnings, 0).toFixed(2),
+                    'Last Active': user.lastActive ? new Date(user.lastActive).toLocaleString() : 'Never'
+                });
+            }
+            
+            // Create worksheet
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "UserData");
+            
+            // Generate Excel file
+            const fileName = `DUB_User_Data_${new Date().toISOString().slice(0,10)}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        });
+
         // Mining Simulation
         const mineBtn = document.getElementById('mineBtn');
         const miningStatus = document.getElementById('miningStatus');
@@ -825,10 +1399,8 @@
 
         let isMining = false;
         let isConnecting = false;
-        let earnings = 0;
         let miningInterval;
         const correctVerificationCode = '999';
-        let earningsHistory = []; // Will store daily earnings
         let lastUpdateTime = Date.now();
         let miningMultiplier = 1;
         let bandwidthSpeed = 10; // Simulated bandwidth speed (Mbps)
@@ -913,7 +1485,6 @@
         let bandwidthData = [];
         let sessionStartTime = null;
         let totalBandwidthShared = 0;
-        const userId = 'user_' + Math.random().toString(36).substr(2, 9); // Generate random user ID
 
         // Track which apps are downloaded but not connected
         let downloadedApps = {
@@ -942,7 +1513,7 @@
         }
 
         // Initialize earnings history with zeros
-        earningsHistory = new Array(7).fill(0);
+        let earningsHistory = new Array(7).fill(0);
 
         // Function to record bandwidth usage and send to server
         function recordBandwidthUsage(speed, duration) {
@@ -955,11 +1526,22 @@
             };
             
             // Send to simulated server
-            server.receiveData(userId, dataPoint);
+            server.receiveData(currentUser.userId, dataPoint);
             
             // Store locally for this session
             bandwidthData.push(dataPoint);
             totalBandwidthShared += dataPoint.bandwidthMB;
+            
+            // Update user's total bandwidth in database
+            if (usersDatabase[currentUser.email]) {
+                usersDatabase[currentUser.email].bandwidthShared = 
+                    (usersDatabase[currentUser.email].bandwidthShared || 0) + dataPoint.bandwidthMB;
+            }
+            
+            // Update admin dashboard if visible
+            if (currentUser && currentUser.isAdmin && adminDashboard.style.display === 'block') {
+                updateAdminDashboard();
+            }
         }
 
         // Update graph with current earnings data
@@ -1116,6 +1698,16 @@
         function updateReferralStats() {
             referralEarnings.textContent = referralEarningsTotal.toFixed(2);
             totalReferrals.textContent = referralsCount;
+            
+            // Update in user database
+            if (currentUser && usersDatabase[currentUser.email]) {
+                usersDatabase[currentUser.email].referrals = usersDatabase[currentUser.email].referrals || [];
+                usersDatabase[currentUser.email].referrals.push({
+                    userId: 'ref_' + Math.random().toString(36).substr(2, 6),
+                    earnings: referralEarningsTotal,
+                    date: new Date().toISOString()
+                });
+            }
         }
 
         // Initialize
@@ -1142,6 +1734,11 @@
                 goalReached = false;
                 goalProgress.textContent = `${earnings.toFixed(2)}/${dailyGoal} DUB`;
                 alert(`Daily goal set to ${dailyGoal} DUB!`);
+                
+                // Save goal to user database
+                if (currentUser && usersDatabase[currentUser.email]) {
+                    usersDatabase[currentUser.email].dailyGoal = dailyGoal;
+                }
             } else {
                 alert('Please enter a valid goal amount');
             }
@@ -1162,7 +1759,12 @@
                 sessionStartTime = new Date();
                 bandwidthData = [];
                 totalBandwidthShared = 0;
-                server.startSession(userId);
+                server.startSession(currentUser.userId);
+                
+                // Update last active time in user database
+                if (currentUser && usersDatabase[currentUser.email]) {
+                    usersDatabase[currentUser.email].lastActive = new Date().toISOString();
+                }
                 
                 // Simulate connection process
                 setTimeout(function() {
@@ -1198,9 +1800,15 @@
                         earnings += minedAmount;
                         earningsDisplay.innerHTML = `<B>${earnings.toFixed(2)}<br>$DUB</B>`;
                         
-                        // Update today's earnings in history
-                        const todayIndex = 6; // Last index is today
-                        earningsHistory[todayIndex] = earnings;
+                        // Update in user database
+                        if (currentUser && usersDatabase[currentUser.email]) {
+                            usersDatabase[currentUser.email].earnings = earnings;
+                            
+                            // Update today's earnings in history
+                            const todayIndex = 6; // Last index is today
+                            earningsHistory[todayIndex] = earnings;
+                            usersDatabase[currentUser.email].earningsHistory = earningsHistory;
+                        }
                         
                         updateGraph();
                         checkGoal(); // Check if goal is reached
@@ -1209,6 +1817,11 @@
                         if (referralsCount > 0 && Math.random() > 0.9) {
                             referralEarningsTotal += minedAmount * 0.1;
                             updateReferralStats();
+                        }
+                        
+                        // Update admin dashboard if visible
+                        if (currentUser && currentUser.isAdmin && adminDashboard.style.display === 'block') {
+                            updateAdminDashboard();
                         }
                     }, 1000);
                 }, 4500);
@@ -1226,7 +1839,7 @@
                     const duration = (new Date() - sessionStartTime) / 1000;
                     recordBandwidthUsage(bandwidthSpeed, duration);
                     sessionStartTime = null;
-                    server.endSession(userId);
+                    server.endSession(currentUser.userId);
                 }
                 
                 updateGraph();
@@ -1268,7 +1881,17 @@
             window.open('https://t.me/DUBCOIN9', '_blank');
             setTimeout(function() {
                 earnings += 2000;
-                earningsHistory[6] = earnings; // Update today's earnings
+                
+                // Update in user database
+                if (currentUser && usersDatabase[currentUser.email]) {
+                    usersDatabase[currentUser.email].earnings = earnings;
+                    
+                    // Update today's earnings in history
+                    const todayIndex = 6; // Last index is today
+                    earningsHistory[todayIndex] = earnings;
+                    usersDatabase[currentUser.email].earningsHistory = earningsHistory;
+                }
+                
                 earningsDisplay.innerHTML = `<B>${earnings.toFixed(2)}<br>$DUB</B>`;
                 this.textContent = 'Claimed';
                 this.disabled = true;
@@ -1289,7 +1912,17 @@
             
             if (userCode === correctVerificationCode) {
                 earnings += 3000;
-                earningsHistory[6] = earnings; // Update today's earnings
+                
+                // Update in user database
+                if (currentUser && usersDatabase[currentUser.email]) {
+                    usersDatabase[currentUser.email].earnings = earnings;
+                    
+                    // Update today's earnings in history
+                    const todayIndex = 6; // Last index is today
+                    earningsHistory[todayIndex] = earnings;
+                    usersDatabase[currentUser.email].earningsHistory = earningsHistory;
+                }
+                
                 earningsDisplay.innerHTML = `<B>${earnings.toFixed(2)}<br>$DUB</B>`;
                 
                 twitterTaskBtn.textContent = 'Claimed';
